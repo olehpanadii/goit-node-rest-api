@@ -1,6 +1,10 @@
 import express from "express";
 import contactsController from "../../conrtollers/contacts-controller.js";
-import { isEmptyBody, isValideId } from "../../middlewares/index.js";
+import {
+  isEmptyBody,
+  isValideId,
+  isEmptyBodyFav,
+} from "../../middlewares/index.js";
 import { validateBody } from "../../decorators/index.js";
 import {
   contactAddSchema,
@@ -31,7 +35,7 @@ contactsRouter.put(
 contactsRouter.patch(
   "/:id/favorite",
   isValideId,
-  isEmptyBody,
+  isEmptyBodyFav,
   validateBody(contactUpdateFavoriteSchema),
   contactsController.updateById
 );
