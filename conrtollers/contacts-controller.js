@@ -4,12 +4,12 @@ import { ctrlWrapper } from "../decorators/index.js";
 
 import Contact from "../models/Contact.js";
 
-const getAll = async (req, res, next) => {
+const getAll = async (req, res) => {
   const result = await Contact.find();
   res.json(result);
 };
 
-const getById = async (req, res, next) => {
+const getById = async (req, res) => {
   const { id } = req.params;
   const result = await Contact.findById(id);
   if (!result) {
@@ -21,12 +21,12 @@ const getById = async (req, res, next) => {
   res.json(result);
 };
 
-const addContact = async (req, res, next) => {
+const addContact = async (req, res) => {
   const result = await Contact.create(req.body);
   res.status(201).json(result);
 };
 
-const updateById = async (req, res, next) => {
+const updateById = async (req, res) => {
   const { id } = req.params;
   const result = await Contact.findByIdAndUpdate(id, req.body);
   if (!result) {
@@ -38,7 +38,7 @@ const updateById = async (req, res, next) => {
   res.json(result);
 };
 
-const deleteById = async (req, res, next) => {
+const deleteById = async (req, res) => {
   const { id } = req.params;
   const result = await Contact.findByIdAndDelete(id);
   if (!result) {
