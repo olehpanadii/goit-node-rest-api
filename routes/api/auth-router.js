@@ -4,6 +4,7 @@ import {
   isEmptyBody,
   isValideId,
   isEmptyBodyFav,
+  authenticate,
 } from "../../middlewares/index.js";
 import { validateBody } from "../../decorators/index.js";
 
@@ -24,5 +25,7 @@ authRouter.post(
   validateBody(userSignupSchema),
   authController.signin
 );
+authRouter.get("/current", authenticate, authController.getCurrent);
 
+authRouter.post("/logout", authenticate, authController.logout);
 export default authRouter;
