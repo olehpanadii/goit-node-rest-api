@@ -5,10 +5,13 @@ import fs from "fs/promises";
 import "dotenv/config";
 import gravatar from "gravatar";
 import path from "path";
+import dotenv from "dotenv";
 
 import { HttpError } from "../helpers/index.js";
 
 import { ctrlWrapper } from "../decorators/index.js";
+
+dotenv.config();
 
 const { JWT_SECRET } = process.env;
 const avatarPath = path.resolve("public", "avatars");

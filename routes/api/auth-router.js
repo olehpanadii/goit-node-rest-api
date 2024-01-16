@@ -34,9 +34,10 @@ authRouter.post("/logout", authenticate, authController.logout);
 authRouter.patch(
   "/avatars",
   upload.single("avatarURL"),
-  isEmptyBody,
+
   sizeAvatar,
   authenticate,
   authController.updateAvatar
 );
+
 export default authRouter;
