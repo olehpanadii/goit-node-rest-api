@@ -107,8 +107,8 @@ const updateAvatar = async (req, res) => {
   if (!result) {
     throw HttpError(404, "User not found");
   }
-  if (req.user.avatarURL) {
-    const oldAvatarPath = path.join(path.resolve("public", req.user.avatarURL));
+  if (result.avatarURL) {
+    const oldAvatarPath = path.join(path.resolve("public", result.avatarURL));
     await fs.unlink(oldAvatarPath);
   }
 
