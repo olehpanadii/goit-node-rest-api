@@ -8,7 +8,7 @@ import {
 } from "../../middlewares/index.js";
 import { validateBody } from "../../decorators/index.js";
 
-import { userSignupSchema } from "../../models/User.js";
+import { userSignupSchema, userEmailSchema } from "../../models/User.js";
 
 const authRouter = express.Router();
 
@@ -19,6 +19,16 @@ authRouter.post(
   validateBody(userSignupSchema),
   sizeAvatar,
   authController.signup
+);
+authRouter.get(
+  "/verify/:verificationToken",
+  authController.verificationRequest
+);
+authRouter.post(
+  "/verify",
+  isEmptyBody,
+  validateBody(userEmailSchema),
+  authController.resendVerifyEmail
 );
 
 authRouter.post(
