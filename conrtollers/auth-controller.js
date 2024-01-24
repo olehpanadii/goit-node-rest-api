@@ -1,13 +1,20 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import fs from "fs/promises";
 import "dotenv/config";
+import gravatar from "gravatar";
+import path from "path";
+import dotenv from "dotenv";
 
 import { HttpError } from "../helpers/index.js";
 
 import { ctrlWrapper } from "../decorators/index.js";
 
+dotenv.config();
+
 const { JWT_SECRET } = process.env;
+const avatarPath = path.resolve("public", "avatars");
 
 const signup = async (req, res) => {
   const { email, password } = req.body;
@@ -16,11 +23,29 @@ const signup = async (req, res) => {
     throw HttpError(409, "Email already in use");
   }
   const hashPassword = await bcrypt.hash(password, 10);
-  const newUser = await User.create({ ...req.body, password: hashPassword });
+
+  let avatarURL = gravatar.url(email, {
+    s: "200",
+    r: "pg",
+    d: "avatar",
+  });
+
+  if (req.file) {
+    const { path: oldPath, filename } = req.file;
+    const newPath = path.join(avatarPath, filename);
+    await fs.rename(oldPath, newPath);
+    avatarURL = path.join("avatars", filename);
+  }
+  const newUser = await User.create({
+    ...req.body,
+    password: hashPassword,
+    avatarURL,
+  });
   res.status(201).json({
     user: {
       email: newUser.email,
       subscription: newUser.subscription,
+      avatarURL: newUser.avatarURL,
     },
   });
 };
@@ -63,9 +88,39 @@ const logout = async (req, res) => {
   });
   res.status(204).json({ message: "Logout succesfull" });
 };
+
+const updateAvatar = async (req, res) => {
+  const { token } = req.user;
+  let avatarURL = req.user.avatarURL;
+  if (req.file) {
+    const { path: oldPath, filename } = req.file;
+    const newPath = path.join(avatarPath, filename);
+    await fs.rename(oldPath, newPath);
+    avatarURL = path.join("avatars", filename);
+  }
+
+  const result = await User.findOneAndUpdate(
+    { token },
+    { avatarURL },
+    { new: true }
+  );
+  if (!result) {
+    throw HttpError(404, "User not found");
+  }
+  if (result.avatarURL) {
+    const oldAvatarPath = path.join(path.resolve("public", result.avatarURL));
+    await fs.unlink(oldAvatarPath);
+  }
+
+  res.json({
+    avatarURL: result.avatarURL,
+  });
+};
+
 export default {
   signup: ctrlWrapper(signup),
   signin: ctrlWrapper(signin),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
+  updateAvatar: ctrlWrapper(updateAvatar),
 };
