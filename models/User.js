@@ -23,7 +23,14 @@ const userSchema = new Schema(
       default: "starter",
     },
     avatarURL: { type: String },
-    token: String,
+    token: { type: String },
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+    },
   },
   { versionKey: false, timestamps: true }
 );
@@ -41,6 +48,9 @@ export const userSignupSchema = Joi.object({
     .valid("starter", "pro", "business")
     .default("starter"),
   token: Joi.string(),
+});
+export const userEmailSchema = Joi.object({
+  email: Joi.string().pattern(emailRegexp).required(),
 });
 const User = model("user", userSchema);
 
